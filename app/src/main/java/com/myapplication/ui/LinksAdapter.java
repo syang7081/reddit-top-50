@@ -121,10 +121,8 @@ public class LinksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     class MyObserver implements Observer<Bitmap> {
         private Disposable disposable;
         private WeakReference<ImageView> imageViewWeakReference;
-        //private ImageView imageView;
 
         public MyObserver(ImageView imageView) {
-            //this.imageView = imageView;
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
         }
 
