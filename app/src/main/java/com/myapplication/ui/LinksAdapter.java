@@ -115,14 +115,14 @@ public class LinksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private void loadImage(final ImageView imageView, final String urlStr) {
         DataSource.getInstance()
                 .loadImage(urlStr)
-                .subscribe(new MyObserver(imageView));
+                .subscribe(new ImageDownloadObserver(imageView));
     }
 
-    class MyObserver implements Observer<Bitmap> {
+    class ImageDownloadObserver implements Observer<Bitmap> {
         private Disposable disposable;
         private WeakReference<ImageView> imageViewWeakReference;
 
-        public MyObserver(ImageView imageView) {
+        public ImageDownloadObserver(ImageView imageView) {
             imageViewWeakReference = new WeakReference<ImageView>(imageView);
         }
 
