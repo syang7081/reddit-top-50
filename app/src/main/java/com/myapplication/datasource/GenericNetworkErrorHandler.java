@@ -9,8 +9,8 @@ import io.reactivex.functions.Consumer;
  */
 
 public class GenericNetworkErrorHandler<T extends Throwable> implements Consumer<T> {
-    private static final String tag = GenericNetworkErrorHandler.class.getSimpleName();
+    private static final String TAG = GenericNetworkErrorHandler.class.getSimpleName();
     public void accept(T data) {
-        Log.d(tag, data.getLocalizedMessage());
+        Log.d(TAG, data.getLocalizedMessage());
     }
 }

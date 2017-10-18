@@ -49,12 +49,12 @@ public class LinkInfo implements Serializable {
         return url;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
     public String getTitle() {
         return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getAuthorName() {
@@ -71,25 +71,5 @@ public class LinkInfo implements Serializable {
 
     public int getNumberOfComments() {
         return numberOfComments;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public void setAuthorName(String authorName) {
-        this.authorName = authorName;
-    }
-
-    public void setCreatedUtc(long createdUtc) {
-        this.createdUtc = createdUtc;
-    }
-
-    public void setThumbNailUrl(String thumbNailUrl) {
-        this.thumbNailUrl = thumbNailUrl;
-    }
-
-    public void setNumberOfComments(int numberOfComments) {
-        this.numberOfComments = numberOfComments;
     }
 }

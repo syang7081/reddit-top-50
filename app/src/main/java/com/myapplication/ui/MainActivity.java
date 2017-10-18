@@ -26,6 +26,7 @@ import io.reactivex.functions.Consumer;
  */
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int MAX_PAGES_ALLOWED = 5;
     private static final String CURRENT_PAGE_KEY = "current_page";
     private static final String SEARCH_PATH_KEY = "search_path";
     private final String REDDIT_TOP_LINK = "https://www.reddit.com/top.json?limit=10";
@@ -33,29 +34,29 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private int currentPageNumber = 0;
     private int pendingPageNum = 0;
     private CompositeDisposable compositeDisposable = null;
-    private TextView currentPageView;
-    private RecyclerView linksView;
-    private LinksAdapter linksAdapter;
-    private List<LinkInfo> linkData = new ArrayList<>();
+    private TextView currentPageNumberView;
+    private RecyclerView linkInfoView;
+    private LinkInfoAdapter linkInfoAdapter;
+    private List<LinkInfo> linkInfos = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
 
-        linksView = (RecyclerView) findViewById(R.id.links_view);
+        linkInfoView = (RecyclerView) findViewById(R.id.links_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
-        linksView.setLayoutManager(linearLayoutManager);
-        linksAdapter = new LinksAdapter(linkData);
-        linksView.setAdapter(linksAdapter);
+        linkInfoView.setLayoutManager(linearLayoutManager);
+        linkInfoAdapter = new LinkInfoAdapter(linkInfos);
+        linkInfoView.setAdapter(linkInfoAdapter);
 
         Button button = (Button) findViewById(R.id.prev_page);
         button.setOnClickListener(this);
         button = (Button) findViewById(R.id.next_page);
         button.setOnClickListener(this);
 
-        currentPageView = (TextView) findViewById(R.id.current_page_num);
+        currentPageNumberView = (TextView) findViewById(R.id.current_page_num);
 
         if (savedInstanceState != null && savedInstanceState.getInt(CURRENT_PAGE_KEY, 0) > 0) {
             searchDocPath = savedInstanceState.getString(SEARCH_PATH_KEY, "");
@@ -70,12 +71,12 @@ public class MainActivity extends Activity implements View.OnClickListener {
         // Only saving these two parameters, other data will retrieve from the clouds again
         state.putInt(CURRENT_PAGE_KEY, currentPageNumber);
         state.putString(SEARCH_PATH_KEY, searchDocPath);
-        // TODO: We can also save linkData and the current scroll position of the recycler view
+        // TODO: We can also save linkInfos and the current scroll position of the recycler view
         // and restore them when the activity is recreated after screen rotation
     }
 
     private void updateCurrentPageNum(int pageNum) {
-        currentPageView.setText(String.valueOf(pageNum));
+        currentPageNumberView.setText(String.valueOf(pageNum));
         this.currentPageNumber = pageNum;
     }
 
@@ -115,17 +116,17 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void retrieveTopInfo(int pageNumber) {
         if (pageNumber <= 0) {
             pageNumber = 1;
-        } else if (pageNumber > 5) {
-            pageNumber = 5;
+        } else if (pageNumber > MAX_PAGES_ALLOWED) {
+            pageNumber = MAX_PAGES_ALLOWED;
         }
         if (pageNumber == currentPageNumber || pageNumber == pendingPageNum) return;
 
         // Pagination
-        if (currentPageNumber != 0 && !linkData.isEmpty()) {
+        if (currentPageNumber != 0 && !linkInfos.isEmpty()) {
             if (pageNumber < currentPageNumber) {
-                searchDocPath = "&before=t3_" + linkData.get(0).getId();
+                searchDocPath = "&before=t3_" + linkInfos.get(0).getId();
             } else {
-                searchDocPath = "&after=t3_" + linkData.get(linkData.size() - 1).getId();
+                searchDocPath = "&after=t3_" + linkInfos.get(linkInfos.size() - 1).getId();
             }
         }
 
@@ -143,9 +144,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Disposable disposable = observable.subscribe(new Consumer<List<LinkInfo>>() {
                     @Override
                     public void accept(List<LinkInfo> linkInfos) throws Exception {
-                        linkData.clear();
-                        linkData.addAll(linkInfos);
-                        linksAdapter.notifyDataSetChanged();
+                        MainActivity.this.linkInfos.clear();
+                        MainActivity.this.linkInfos.addAll(linkInfos);
+                        linkInfoAdapter.notifyDataSetChanged();
                         updateCurrentPageNum(pendingPageNum);
                     }
                 }, new GenericNetworkErrorHandler());

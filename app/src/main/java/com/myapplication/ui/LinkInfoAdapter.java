@@ -27,17 +27,17 @@ import io.reactivex.disposables.Disposable;
  * Created by syang on 10/6/2017.
  */
 
-public class LinksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private static final String TAG = LinksAdapter.class.getSimpleName();
+public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private static final String TAG = LinkInfoAdapter.class.getSimpleName();
     private static final long MIN_SPAN = 60 * 1000; //ms
     private static final long HOUR_SPAN = MIN_SPAN * 60;
     private static final long DAY_SPAN = HOUR_SPAN * 24;
 
-    private List<LinkInfo> links;
+    private List<LinkInfo> linkInfos;
     private boolean isDetached = false;
 
-    public LinksAdapter(List<LinkInfo> links) {
-        this.links = links;
+    public LinkInfoAdapter(List<LinkInfo> links) {
+        this.linkInfos = links;
     }
 
     public void onDetachedFromRecyclerView(RecyclerView recyclerView) {
@@ -58,8 +58,8 @@ public class LinksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (links == null || (links.size() - 1) < position) return;
-        LinkInfo linkInfo = links.get(position);
+        if (linkInfos == null || (linkInfos.size() - 1) < position) return;
+        LinkInfo linkInfo = linkInfos.get(position);
         LinkViewHolder linkViewHolder = (LinkViewHolder) holder;
 
         // Recycle bitmap
@@ -82,8 +82,8 @@ public class LinksAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
     public int getItemCount() {
-        if (links == null) return 0;
-        return links.size();
+        if (linkInfos == null) return 0;
+        return linkInfos.size();
     }
 
     private void recycleBitmap(LinkViewHolder linkViewHolder) {
