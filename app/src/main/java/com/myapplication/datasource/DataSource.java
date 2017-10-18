@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.myapplication.model.LinkInfo;
 
 import java.io.BufferedReader;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -49,14 +50,14 @@ public class DataSource {
 
                         // We can build a data model to hold the entire json response. For simplicity,
                         // here the json string is parsed into a node tree and the "children" node/array is
-                        // retrieved, and individual "data" objects in the children are converted to string
-                        // again and mapped to the class LinkInfo, not optimized for performance.
+                        // retrieved, and individual "data" objects (TreeNode) in the children are converted
+                        // to LinkInfo.
 
                         TreeNode treeNode = mapper.readTree(jsonStr).get("data").get("children");
                         for (int j = 0; j < treeNode.size(); j++) {
                             TreeNode dataNode = treeNode.get(j);
                             dataNode = dataNode.get("data");
-                            LinkInfo linkInfo = mapper.readValue(dataNode.toString(), LinkInfo.class);
+                            LinkInfo linkInfo = mapper.convertValue(dataNode, LinkInfo.class);
                             linkInfos.add(linkInfo);
                         }
                         emitter.onNext(linkInfos);
@@ -114,7 +115,9 @@ public class DataSource {
                 try {
                     Log.d(TAG, "Image url: " + urlStr);
                     URL url = new URL(urlStr);
-                    Bitmap bmp = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    InputStream inputStream = url.openConnection().getInputStream();
+                    Bitmap bmp = BitmapFactory.decodeStream(inputStream);
+                    inputStream.close();
                     emitter.onNext(bmp);
                 }
                 catch (Exception e) {

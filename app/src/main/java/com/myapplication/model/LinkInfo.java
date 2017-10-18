@@ -31,16 +31,6 @@ public class LinkInfo implements Serializable {
 
     private String url = "";
 
-    private Bitmap thumbnailBitmap;
-
-    public Bitmap getThumbBitmap() {
-        return thumbnailBitmap;
-    }
-
-    public void setThumbBitmap(Bitmap bitmap) {
-        this.thumbnailBitmap = bitmap;
-    }
-
     public String getId() {
         return id;
     }

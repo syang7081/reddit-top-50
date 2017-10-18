@@ -64,11 +64,7 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         // Recycle bitmap
         recycleBitmap(linkViewHolder);
-
-        if (!TextUtils.isEmpty(linkInfo.getThumbNailUrl())) {
-            linkViewHolder.thumbNail.setTag(linkInfo);
-            loadImage(linkViewHolder.thumbNail, linkInfo.getThumbNailUrl());
-        }
+        loadImage(linkViewHolder.thumbNail, linkInfo.getThumbNailUrl());
 
         linkViewHolder.title.setText(linkInfo.getTitle());
         linkViewHolder.author.setText("By " + linkInfo.getAuthorName());
@@ -87,11 +83,13 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private void recycleBitmap(LinkViewHolder linkViewHolder) {
-        if (linkViewHolder.thumbNail.getTag() instanceof LinkInfo) {
-            LinkInfo link = (LinkInfo) linkViewHolder.thumbNail.getTag();
-            if (link.getThumbBitmap() != null) {
+        // The bitmap for the thumbnail (ImageView) is stored as
+        // a tag for the ImageView.
+        if (linkViewHolder.thumbNail.getTag() instanceof Bitmap) {
+            Bitmap bitmap = (Bitmap) linkViewHolder.thumbNail.getTag();
+            if (bitmap != null) {
                 linkViewHolder.thumbNail.setImageResource(R.mipmap.ic_launcher);
-                link.getThumbBitmap().recycle();
+                bitmap.recycle();
             }
             linkViewHolder.thumbNail.setTag("");
         }
@@ -112,9 +110,10 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return elapsedTime;
     }
 
-    private void loadImage(final ImageView imageView, final String urlStr) {
+    private void loadImage(final ImageView imageView, final String url) {
+        if (TextUtils.isEmpty(url)) return;
         DataSource.getInstance()
-                .loadImage(urlStr)
+                .loadImage(url)
                 .subscribe(new ImageDownloadObserver(imageView));
     }
 
@@ -145,10 +144,11 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (!isDetached && imageViewWeakReference.get() != null) {
                 ImageView imageView = imageViewWeakReference.get();
                 imageView.setImageBitmap(bitmap);
-                if (imageView.getTag() instanceof LinkInfo) {
-                    LinkInfo link = (LinkInfo) imageView.getTag();
-                    link.setThumbBitmap(bitmap);
+                if (imageView.getTag() instanceof Bitmap) {
+                    Bitmap bitmap2 = (Bitmap) imageView.getTag();
+                    bitmap2.recycle();
                 }
+                imageView.setTag(bitmap);
             }
             dispose();
         }
