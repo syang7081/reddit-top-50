@@ -82,12 +82,13 @@ public class DataSource {
             try {
                 int statusCode = urlConnection.getResponseCode();
                 if (statusCode == 200) {
-                    BufferedReader in = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
                     StringBuilder sb = new StringBuilder();
                     String line = "";
-                    while ((line = in.readLine()) != null) {
+                    while ((line = bufferedReader.readLine()) != null) {
                         sb.append(line + "\n");
                     }
+                    bufferedReader.close();
                     return sb.toString();
                 } else {
                     throw new Exception("Failed to get response from the server, status code = " + statusCode
@@ -99,6 +100,7 @@ public class DataSource {
                 }
             }
         } catch (Exception e) {
+            Log.e(TAG, "Caught exception: ", e);
             throw e;
         }
     }
