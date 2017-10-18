@@ -70,6 +70,7 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         linkViewHolder.author.setText("By " + linkInfo.getAuthorName());
         linkViewHolder.commentNum.setText("Comments: " + linkInfo.getNumberOfComments());
         linkViewHolder.timeElapsed.setText(getTimeElapsed(linkInfo.getCreatedUtc()));
+        linkViewHolder.externalUrl = linkInfo.getUrl();
     }
 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -165,6 +166,7 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public TextView author;
         public TextView commentNum;
         public TextView timeElapsed;
+        public String externalUrl;
         public LinkViewHolder(LayoutInflater inflater, ViewGroup parent) {
             super(inflater.inflate(R.layout.single_link_layout, parent, false));
             thumbNail = (ImageView) itemView.findViewById(R.id.thumbnail);
@@ -176,14 +178,11 @@ public class LinkInfoAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         public void onClick(View view) {
-            if (view.getId() == R.id.thumbnail && view.getTag() instanceof LinkInfo) {
+            if (view.getId() == R.id.thumbnail && !TextUtils.isEmpty(externalUrl)) {
                 // Open the web page
-                String url = ((LinkInfo) view.getTag()).getUrl();
-                if (!TextUtils.isEmpty(url)) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    view.getContext().startActivity(i);
-                }
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(externalUrl));
+                view.getContext().startActivity(i);
             }
         }
     }
